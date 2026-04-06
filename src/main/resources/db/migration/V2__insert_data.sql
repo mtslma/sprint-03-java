@@ -1,25 +1,25 @@
 -- 1. INSERINDO 15 USUÁRIOS NO TOTAL (5 de cada Role)
 -- Hash para senha '123' (ou a que você validou no cadastro)
 -- Admin
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('admin1@medix.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'ADMIN');
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('admin2@medix.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'ADMIN');
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('admin3@medix.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'ADMIN');
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('admin4@medix.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'ADMIN');
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('admin5@medix.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'ADMIN');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('admin1@medix.com', '123456', 'ADMIN');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('admin2@medix.com', '123456', 'ADMIN');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('admin3@medix.com', '123456', 'ADMIN');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('admin4@medix.com', '123456', 'ADMIN');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('admin5@medix.com', '123456', 'ADMIN');
 
 -- Colaboradores
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('medico1@medix.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'COLABORADOR');
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('medico2@medix.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'COLABORADOR');
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('recepcao1@medix.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'COLABORADOR');
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('medico3@medix.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'COLABORADOR');
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('recepcao2@medix.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'COLABORADOR');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('medico1@medix.com', '123456', 'COLABORADOR');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('medico2@medix.com', '123456', 'COLABORADOR');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('recepcao1@medix.com', '123456', 'COLABORADOR');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('medico3@medix.com', '123456', 'COLABORADOR');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('recepcao2@medix.com', '123456', 'COLABORADOR');
 
 -- Pacientes
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('paciente1@gmail.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'PACIENTE');
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('paciente2@gmail.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'PACIENTE');
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('paciente3@gmail.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'PACIENTE');
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('paciente4@gmail.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'PACIENTE');
-INSERT INTO TB_USUARIO (email, senha, role) VALUES ('paciente5@gmail.com', '$2a$10$1nryMwcgH4ev6oV9Pp9yHeNdNt5NUkgu0tRgXHb5Zzq.xHPfyj4bm', 'PACIENTE');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('paciente1@gmail.com', '123456', 'PACIENTE');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('paciente2@gmail.com', '123456', 'PACIENTE');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('paciente3@gmail.com', '123456', 'PACIENTE');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('paciente4@gmail.com', '123456', 'PACIENTE');
+INSERT INTO TB_USUARIO (email, senha, role) VALUES ('paciente5@gmail.com', '123456', 'PACIENTE');
 
 
 -- 2. TABELA FILHA: TB_ADMIN
