@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: medix-api
+
+  # Configuração do Banco de Dados Oracle (FIAP)
+  datasource:
+    url: jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
+    username: rm559728
+    password: "250306"
+    driver-class-name: oracle.jdbc.OracleDriver
+
+  # Configuração do JPA / Hibernate
+  jpa:
+    database-platform: org.hibernate.dialect.OracleDialect
+    hibernate:
+        ddl-auto: none # Flyway assume o controle do esquema [cite: 221]
+    show-sql: true
+
+  # Configuração do Flyway Migration
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: "0"
+# Configurações customizadas para Segurança [cite: 173]
+api:
+  security:
+    token:
+      # Secret JWT inventada para o seu projeto
+      secret: "FIAPMEDIXCHALLENGE2026SECRETKEYRM559728"
