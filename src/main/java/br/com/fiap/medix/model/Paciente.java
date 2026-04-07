@@ -1,5 +1,6 @@
 package br.com.fiap.medix.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,5 +21,6 @@ public class Paciente extends Usuario {
     @ElementCollection
     @CollectionTable(name = "TB_PACIENTE_ALERGIAS", joinColumns = @JoinColumn(name = "paciente_id"))
     @Column(name = "alergia")
+    @JsonIgnore
     private List<String> alergias;
 }
