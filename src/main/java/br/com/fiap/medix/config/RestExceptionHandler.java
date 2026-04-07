@@ -51,4 +51,17 @@ public class RestExceptionHandler {
         );
         return ResponseEntity.status(status).body(body);
     }
+
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ErroResponse> handleDuplicidade(org.springframework.dao.DataIntegrityViolationException ex) {
+        var status = HttpStatus.CONFLICT; // Código 409
+        var body = new ErroResponse(
+                status.value(),
+                "Dado Duplicado",
+                "Este E-mail ou CPF já está cadastrado no sistema.",
+                LocalDateTime.now(),
+                null
+        );
+        return ResponseEntity.status(status).body(body);
+    }
 }

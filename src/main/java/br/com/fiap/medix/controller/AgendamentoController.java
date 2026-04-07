@@ -1,6 +1,7 @@
 package br.com.fiap.medix.controller;
 
 import br.com.fiap.medix.dto.AgendamentoRequest;
+import br.com.fiap.medix.dto.DashboardPacienteDTO;
 import br.com.fiap.medix.model.Agendamento;
 import br.com.fiap.medix.model.Usuario;
 import br.com.fiap.medix.service.AgendamentoService;
@@ -46,4 +47,21 @@ public class AgendamentoController {
         service.confirmarAgendamento(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<DashboardPacienteDTO> dashboard(@AuthenticationPrincipal Usuario logado) {
+        return ResponseEntity.ok(service.carregarDashboard(logado));
+    }
+
+    @PostMapping("/manutencao/finalizar-antigos")
+    public ResponseEntity<Void> forçarFinalizacao() {
+        service.rodarLimpezaAutomatica();
+        return ResponseEntity.noContent().build();
+    }
+    @PatchMapping("/{id}/status-seguro")
+    public ResponseEntity<Void> atualizarStatusBanco(@PathVariable Long id, @RequestParam String status) {
+        service.atualizarStatusSeguro(id, status);
+        return ResponseEntity.noContent().build();
+    }
+
 }
