@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/agendamentos")
 public class AgendamentoController {
@@ -20,6 +22,18 @@ public class AgendamentoController {
     public ResponseEntity<Agendamento> agendar(@RequestBody AgendamentoRequest dto, @AuthenticationPrincipal Usuario logado) {
         return ResponseEntity.status(201).body(service.criarAgendamento(dto, logado));
     }
+
+    @GetMapping
+    public ResponseEntity<List<Agendamento>> listarAgendamentos(@AuthenticationPrincipal Usuario logado) {
+        return ResponseEntity.ok(service.listarMeusAgendamentos(logado));
+    }
+
+    @GetMapping("/proximo")
+    public ResponseEntity<Agendamento> buscarProximo(@AuthenticationPrincipal Usuario logado) {
+        Agendamento proximo = service.buscarProximoAgendamento(logado);
+        return proximo != null ? ResponseEntity.ok(proximo) : ResponseEntity.noContent().build();
+    }
+
 
     @PatchMapping("/{id}/cancelar")
     public ResponseEntity<Void> cancelar(@PathVariable Long id) {

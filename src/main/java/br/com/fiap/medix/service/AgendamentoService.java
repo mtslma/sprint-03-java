@@ -5,9 +5,11 @@ import br.com.fiap.medix.enums.StatusAgendamento;
 import br.com.fiap.medix.model.*;
 import br.com.fiap.medix.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AgendamentoService {
@@ -76,5 +78,14 @@ public class AgendamentoService {
 
         agendamento.setStatus(StatusAgendamento.CONFIRMADO);
         repository.save(agendamento);
+    }
+
+    public List<Agendamento> listarMeusAgendamentos(Usuario usuario) {
+        return repository.findAllByPacienteIdOrderByDataHoraInicioDesc(usuario.getId());
+    }
+
+    public Agendamento buscarProximoAgendamento(Usuario usuario) {
+        var lista = repository.findNextAgendamento(usuario.getId(), LocalDateTime.now(), PageRequest.of(0, 1));
+        return lista.isEmpty() ? null : lista.get(0);
     }
 }
