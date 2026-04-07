@@ -30,7 +30,8 @@ public class SecurityConfig {
                         // 2. Regras de acesso conforme o Challenge
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/auth/registrar").permitAll()
-                        .requestMatchers("/unidades/**").hasAnyRole("ADMIN", "COLABORADOR")
+                        .requestMatchers(HttpMethod.GET, "/unidades/**").permitAll() // Público para todos
+                        .requestMatchers("/unidades/**").hasAnyRole("ADMIN", "COLABORADOR") // Restrito para escrita
 
                         // 3. Qualquer outra rota da API exige estar logado
                         .anyRequest().authenticated()
