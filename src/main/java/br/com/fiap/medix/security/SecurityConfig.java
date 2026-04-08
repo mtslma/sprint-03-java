@@ -32,21 +32,27 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        // Libera o acesso à documentação do Swagger UI e esquemas OpenAPI
+                        // 1. ACESSO PÚBLICO: Documentação e Autenticação
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-
-                        // Permite acesso público aos endpoints de login e registro de usuários
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
 
-                        // Restringe rotas administrativas apenas para usuários com perfil ADMIN no banco
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // 2. PROCEDURES E FUNCTIONS (EXCLUSIVO ADMIN):
+                        // Lógicas pesadas e relatórios analíticos do Oracle
+                        .requestMatchers("/agendamentos/relatorio-navegacao").hasRole("ADMIN")
+                        .requestMatchers("/agendamentos/historico-json/**").hasRole("ADMIN")
+                        .requestMatchers("/unidades/duracao-total/**").hasRole("ADMIN")
 
-                        // Define permissão de leitura pública para unidades e escrita para colaboradores
+                        // 3. UNIDADES DE SAÚDE (ADMIN + COLABORADOR):
+                        // Aqui os colaboradores podem fazer POST, PUT e DELETE normalmente
+                        // O GET continua público para qualquer um ver onde tem unidade
                         .requestMatchers(HttpMethod.GET, "/unidades/**").permitAll()
                         .requestMatchers("/unidades/**").hasAnyRole("ADMIN", "COLABORADOR")
 
-                        // Exige autenticação para gestão de agendamentos e procedimentos analíticos
+                        // 4. ADMINISTRAÇÃO GERAL: Rotas de gestão de usuários (Auditoria)
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // 5. OPERACIONAL: Agendamentos exigem apenas login (Paciente/Médico/Admin)
                         .requestMatchers("/agendamentos/**").authenticated()
 
                         .anyRequest().authenticated()
