@@ -16,9 +16,9 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     // Busca o próximo compromisso ativo do paciente de forma cronológica
     @Query("SELECT a FROM Agendamento a WHERE a.paciente.id = :pacienteId " +
-            "AND a.dataHoraInicio >= :agora " +
-            "AND a.status != 'CANCELADO' " +
-            "ORDER BY a.dataHoraInicio ASC")
+            "AND a.dataHoraInicio >= :agora " + // Filtra apenas o que ainda vai acontecer
+            "AND a.status != 'CANCELADO' " +    // Ignora consultas canceladas
+            "ORDER BY a.dataHoraInicio ASC")    // ASCendente: coloca a mais próxima de hoje no topo
     List<Agendamento> findNextAgendamento(@Param("pacienteId") Long pacienteId,
                                           @Param("agora") LocalDateTime agora,
                                           Pageable pageable);

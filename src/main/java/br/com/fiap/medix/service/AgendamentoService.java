@@ -82,18 +82,45 @@ public class AgendamentoService {
 
     // Localiza a consulta mais próxima da data atual para exibição em destaque
     public Agendamento buscarProximoAgendamento(Usuario usuario) {
-        List<Agendamento> lista = repository.findNextAgendamento(usuario.getId(), LocalDateTime.now(), PageRequest.of(0, 1));
+        // Usamos LocalDateTime.now() para garantir que "próximo" seja sempre do presente para o futuro
+        LocalDateTime agora = LocalDateTime.now();
+
+        // PageRequest.of(0, 1) limita o resultado a apenas 1 registro no banco de dados (o mais próximo)
+        List<Agendamento> lista = repository.findNextAgendamento(
+                usuario.getId(),
+                agora,
+                PageRequest.of(0, 1)
+        );
+
         return lista.isEmpty() ? null : lista.get(0);
     }
 
     // Consolida dados estatísticos e listas para compor a visão geral do dashboard
     public DashboardPacienteDTO carregarDashboard(Usuario usuario) {
-        List<Agendamento> todos = repository.findAllByPacienteIdOrderByDataHoraInicioDesc(usuario.getId());
-        long realizados = todos.stream().filter(a -> StatusAgendamento.FINALIZADO.equals(a.getStatus())).count();
-        long cancelados = todos.stream().filter(a -> StatusAgendamento.CANCELADO.equals(a.getStatus())).count();
-        String nome = (usuario instanceof Paciente) ? ((Paciente) usuario).getNome() : "Usuario";
+        // 1. Busca o histórico completo (Ordenado do mais recente para o mais antigo)
+        List<Agendamento> historicoCompleto = repository.findAllByPacienteIdOrderByDataHoraInicioDesc(usuario.getId());
 
-        return new DashboardPacienteDTO(nome, todos.isEmpty() ? null : todos.get(0), todos.stream().limit(3).toList(), realizados, cancelados);
+        // 2. Busca o VERDADEIRO PRÓXIMO agendamento (usa a query com >= agora e ASC)
+        Agendamento proximo = buscarProximoAgendamento(usuario);
+
+        // 3. Cálculos de estatísticas baseados no histórico
+        long realizados = historicoCompleto.stream()
+                .filter(a -> StatusAgendamento.FINALIZADO.equals(a.getStatus())).count();
+        long cancelados = historicoCompleto.stream()
+                .filter(a -> StatusAgendamento.CANCELADO.equals(a.getStatus())).count();
+
+        String nome = (usuario instanceof Paciente) ? ((Paciente) usuario).getNome() : "Usuário";
+
+        // 4. Retorna o DTO:
+        // - proximo: O que vai acontecer em breve (Destaque)
+        // - todos.stream().limit(3): Os 3 registros mais recentes do histórico (Lista abaixo)
+        return new DashboardPacienteDTO(
+                nome,
+                proximo,
+                historicoCompleto.stream().limit(3).toList(),
+                realizados,
+                cancelados
+        );
     }
 
     // Busca todos os colaboradores operacionais para popular o select de médicos
