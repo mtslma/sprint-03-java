@@ -13,7 +13,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.OracleDialect
     hibernate:
-        ddl-auto: none # Flyway assume o controle do esquema [cite: 221]
+        ddl-auto: none # Flyway assume o controle do esquema
     show-sql: true
 
   # Configuração do Flyway Migration
@@ -22,9 +22,11 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
     baseline-version: "0"
-# Configurações customizadas para Segurança [cite: 173]
+
+# Configurações customizadas para Segurança
 api:
   security:
     token:
       # Secret JWT inventada para o seu projeto
       secret: "FIAPMEDIXCHALLENGE2026SECRETKEYRM559728"
+

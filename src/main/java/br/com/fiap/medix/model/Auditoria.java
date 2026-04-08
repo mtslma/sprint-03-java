@@ -1,33 +1,34 @@
 package br.com.fiap.medix.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "TB_AUDITORIA")
-@Data
+@Getter @Setter
 public class Auditoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nome_tabela")
-    private String nomeTabela;
+    @Column(name = "tabela_nome") // Antes estava nome_tabela
+    private String tabelaNome;
 
     @Column(name = "operacao")
     private String operacao;
 
-    @Column(name = "usuario_bd")
-    private String usuarioBd;
+    @Column(name = "usuario_db") // Antes estava usuario_bd
+    private String usuarioDb;
 
-    @Column(name = "data_operacao")
-    private LocalDateTime dataOperacao;
+    @Column(name = "data_evento") // Antes estava data_operacao
+    private LocalDateTime dataEvento;
 
-    @Column(name = "valor_antigo")
-    private String valorAntigo;
+    @Column(name = "dados_antigos") // Antes estava valor_antigo
+    private String dadosAntigos;
 
-    @Column(name = "valor_novo")
-    private String valorNovo;
+    @Column(name = "dados_novos") // Antes estava valor_novo
+    private String dadosNovos;
 }

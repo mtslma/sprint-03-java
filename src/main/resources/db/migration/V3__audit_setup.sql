@@ -1,15 +1,13 @@
--- Tabela de Auditoria solicitada no PDF [cite: 79]
 CREATE TABLE TB_AUDITORIA (
     id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nome_tabela VARCHAR2(50),
+    tabela_nome VARCHAR2(30),
     operacao VARCHAR2(10),
-    usuario_bd VARCHAR2(100),
-    data_operacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    valor_antigo VARCHAR2(4000),
-    valor_novo VARCHAR2(4000)
+    usuario_db VARCHAR2(100),
+    data_evento TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    dados_antigos VARCHAR2(4000),
+    dados_novos VARCHAR2(4000)
 );
 
--- Trigger de Auditoria para a tabela de Usuários [cite: 30]
 CREATE OR REPLACE TRIGGER TRG_AUDIT_USUARIO
 AFTER INSERT OR UPDATE OR DELETE ON TB_USUARIO
 FOR EACH ROW
@@ -21,7 +19,37 @@ BEGIN
     ELSE v_op := 'DELETE';
     END IF;
 
-    INSERT INTO TB_AUDITORIA (nome_tabela, operacao, usuario_bd, valor_antigo, valor_novo)
-    VALUES ('TB_USUARIO', v_op, USER, :OLD.email, :NEW.email);
+    INSERT INTO TB_AUDITORIA (tabela_nome, operacao, usuario_db, dados_antigos, dados_novos)
+    VALUES (
+        'TB_USUARIO',
+        v_op,
+        USER,
+        CASE WHEN v_op IN ('UPDATE', 'DELETE') THEN 'ID: ' || :OLD.id || ' | Email: ' || :OLD.email ELSE NULL END,
+        CASE WHEN v_op IN ('INSERT', 'UPDATE') THEN 'ID: ' || :NEW.id || ' | Email: ' || :NEW.email ELSE NULL END
+    );
 END;
 /
+
+CREATE OR REPLACE TRIGGER TRG_AUDIT_UNIDADE
+AFTER INSERT OR UPDATE OR DELETE ON TB_UNIDADE_SAUDE
+FOR EACH ROW
+DECLARE
+    v_op VARCHAR2(10);
+BEGIN
+    IF INSERTING THEN v_op := 'INSERT';
+    ELSIF UPDATING THEN v_op := 'UPDATE';
+    ELSE v_op := 'DELETE';
+    END IF;
+
+    INSERT INTO TB_AUDITORIA (tabela_nome, operacao, usuario_db, dados_antigos, dados_novos)
+    VALUES (
+        'TB_UNIDADE_SAUDE',
+        v_op,
+        USER,
+        :OLD.nome,
+        :NEW.nome
+    );
+END;
+/
+
+COMMIT;

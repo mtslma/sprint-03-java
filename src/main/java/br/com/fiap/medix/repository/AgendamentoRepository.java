@@ -1,6 +1,5 @@
 package br.com.fiap.medix.repository;
 
-import br.com.fiap.medix.dto.AgendamentoRequest;
 import br.com.fiap.medix.model.Agendamento;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,29 +14,25 @@ import java.util.List;
 @Repository
 public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> {
 
-    // Lista todos os agendamentos de um paciente específico
-    List<Agendamento> findAllByPacienteIdOrderByDataHoraInicioDesc(Long pacienteId);
-
-    // Busca o próximo agendamento (o mais próximo do horário atual)
     @Query("SELECT a FROM Agendamento a WHERE a.paciente.id = :pacienteId " +
             "AND a.dataHoraInicio >= :agora " +
             "AND a.status != 'CANCELADO' " +
             "ORDER BY a.dataHoraInicio ASC")
-    List<Agendamento> findNextAgendamento(Long pacienteId, LocalDateTime agora, Pageable pageable);
+    List<Agendamento> findNextAgendamento(@Param("pacienteId") Long pacienteId,
+                                          @Param("agora") LocalDateTime agora,
+                                          Pageable pageable);
 
-    @Query("SELECT COUNT(a) > 0 FROM Agendamento a WHERE a.paciente.id = :pacienteId " +
-            "AND a.status != 'CANCELADO' " +
-            "AND ((a.dataHoraInicio < :fim AND a.dataHoraFim > :inicio))")
-    boolean existsOverlappingAgendamento(Long pacienteId, LocalDateTime inicio, LocalDateTime fim);
+    List<Agendamento> findAllByPacienteIdOrderByDataHoraInicioDesc(Long pacienteId);
 
-    // Chama a PROCEDURE 1: Finalização Automática
-    @Procedure(procedureName = "SP_FINALIZA_CONSULTAS_ANTIGAS")
-    void finalizarConsultasAntigas();
+    // FUNCTION 2: Cálculo Matemático
+    @Query(value = "SELECT FN_CALCULA_DURACAO_TOTAL(:unidadeId) FROM DUAL", nativeQuery = true)
+    Long calcularOcupacaoMinutos(@Param("unidadeId") Long unidadeId);
 
-    // Chama a PROCEDURE 2: Atualização de Status com Parâmetros
-    @Procedure(procedureName = "SP_ATUALIZA_STATUS_AGENDAMENTO")
-    void atualizarStatusViaProcedure(@Param("p_id") Long id, @Param("p_status") String status);
+    // PROCEDURE 1
+    @Procedure(procedureName = "SP_GET_HISTORICO_JSON", outputParameterName = "p_saida")
+    String chamarHistoricoProcedure(@Param("p_paciente_id") Long pacienteId);
 
-    @Query(value = "SELECT FN_VERIFICA_SALA_DISPONIVEL(:salaId, :inicio) FROM DUAL", nativeQuery = true)
-    String verificarDisponibilidadeSala(@Param("salaId") Long salaId, @Param("inicio") LocalDateTime inicio);
+    // PROCEDURE 2
+    @Procedure(procedureName = "SP_RELATORIO_NAVEGACAO", outputParameterName = "p_saida")
+    String chamarRelatorioNavegacaoProcedure();
 }

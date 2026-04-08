@@ -1,27 +1,40 @@
--- 1. Remove Agendamentos e Auditoria
-DROP TABLE TB_AGENDAMENTO CASCADE CONSTRAINTS;
-DROP TABLE TB_AUDITORIA CASCADE CONSTRAINTS;
-DROP SEQUENCE SQ_AUDITORIA;
+-- =============================================================================
+-- SCRIPT DE LIMPEZA TOTAL (RESET COMPLETO) - PROJETO MEDIX
+-- =============================================================================
 
--- 2. Remove Procedures e Functions
+-- 1. APAGAR CONTROLE DO FLYWAY
+-- Isso força o Flyway a rodar todas as migrations do zero no próximo boot
+DROP TABLE "flyway_schema_history" CASCADE CONSTRAINTS;
+
+-- 2. APAGAR PROCEDURES (V5)
+-- Remove as procedures de relatório e histórico
+DROP PROCEDURE SP_GET_HISTORICO_JSON;
+DROP PROCEDURE SP_RELATORIO_NAVEGACAO;
+
+-- 3. APAGAR FUNCTIONS (V4)
+-- Remove as funções de cálculo e conversão JSON
 DROP FUNCTION FN_CALCULA_DURACAO_TOTAL;
--- Se você criou as procedures de auditoria da pág 9, adicione os nomes delas abaixo:
--- DROP PROCEDURE SP_AUDITA_AGENDAMENTO;
+DROP FUNCTION FN_CONVERTE_USUARIO_JSON;
 
--- 3. Remove Unidades e Salas
-DROP TABLE TB_SALA CASCADE CONSTRAINTS;
-DROP TABLE TB_UNIDADE_SAUDE CASCADE CONSTRAINTS;
+-- 4. APAGAR TRIGGERS (V3)
+-- Embora o drop das tabelas remova os gatilhos, o drop explícito garante a limpeza
+DROP TRIGGER TRG_AUDIT_USUARIO;
+DROP TRIGGER TRG_AUDIT_UNIDADE;
 
--- 4. Remove Usuários e Herança
+-- 5. APAGAR TABELAS (ORDEM DE DEPENDÊNCIA)
+-- Tabelas com chaves estrangeiras (FK) devem ser removidas primeiro
+DROP TABLE TB_AGENDAMENTO CASCADE CONSTRAINTS;
 DROP TABLE TB_PACIENTE_ALERGIAS CASCADE CONSTRAINTS;
+DROP TABLE TB_SALA CASCADE CONSTRAINTS;
 DROP TABLE TB_PACIENTE CASCADE CONSTRAINTS;
 DROP TABLE TB_COLABORADOR CASCADE CONSTRAINTS;
 DROP TABLE TB_ADMIN CASCADE CONSTRAINTS;
+DROP TABLE TB_UNIDADE_SAUDE CASCADE CONSTRAINTS;
 DROP TABLE TB_USUARIO CASCADE CONSTRAINTS;
+DROP TABLE TB_AUDITORIA CASCADE CONSTRAINTS;
 
--- 5. O MAIS IMPORTANTE: Resetar o Flyway
-DROP TABLE "RM559728"."flyway_schema_history" CASCADE CONSTRAINTS;
-
--- 6. Faxina final
+-- 6. LIMPEZA DA LIXEIRA DO ORACLE
+-- Essencial para evitar o erro ORA-00955 (nome já usado por objeto existente)
 PURGE RECYCLEBIN;
+
 COMMIT;
