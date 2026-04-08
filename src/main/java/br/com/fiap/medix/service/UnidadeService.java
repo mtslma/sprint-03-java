@@ -1,5 +1,6 @@
 package br.com.fiap.medix.service;
 
+import br.com.fiap.medix.dto.LookupDTO;
 import br.com.fiap.medix.enums.TipoColaborador;
 import br.com.fiap.medix.model.Colaborador;
 import br.com.fiap.medix.model.UnidadeSaude;
@@ -81,5 +82,12 @@ public class UnidadeService {
         } else {
             throw new AccessDeniedException("Acesso negado. Apenas colaboradores podem gerenciar unidades.");
         }
+    }
+
+    // Retorna lista simplificada de unidades para o menu select do Angular
+    public List<LookupDTO.Unidade> listarUnidadesSimples() {
+        return repository.findAll().stream()
+                .map(u -> new LookupDTO.Unidade(u.getId(), u.getNome()))
+                .toList();
     }
 }

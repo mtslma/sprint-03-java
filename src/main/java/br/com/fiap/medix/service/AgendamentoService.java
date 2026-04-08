@@ -2,6 +2,7 @@ package br.com.fiap.medix.service;
 
 import br.com.fiap.medix.dto.AgendamentoRequest;
 import br.com.fiap.medix.dto.DashboardPacienteDTO;
+import br.com.fiap.medix.dto.LookupDTO;
 import br.com.fiap.medix.enums.StatusAgendamento;
 import br.com.fiap.medix.model.*;
 import br.com.fiap.medix.repository.*;
@@ -93,5 +94,13 @@ public class AgendamentoService {
         String nome = (usuario instanceof Paciente) ? ((Paciente) usuario).getNome() : "Usuario";
 
         return new DashboardPacienteDTO(nome, todos.isEmpty() ? null : todos.get(0), todos.stream().limit(3).toList(), realizados, cancelados);
+    }
+
+    // Busca todos os colaboradores operacionais para popular o select de médicos
+    public List<LookupDTO.Medico> listarMedicosSimples() {
+        return colaboradorRepository.findAll().stream()
+                .filter(c -> br.com.fiap.medix.enums.TipoColaborador.OPERACIONAL.equals(c.getTipoColaborador()))
+                .map(m -> new LookupDTO.Medico(m.getId(), m.getNome()))
+                .toList();
     }
 }

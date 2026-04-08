@@ -2,6 +2,7 @@ package br.com.fiap.medix.controller;
 
 import br.com.fiap.medix.dto.AgendamentoRequest;
 import br.com.fiap.medix.dto.DashboardPacienteDTO;
+import br.com.fiap.medix.dto.LookupDTO;
 import br.com.fiap.medix.enums.StatusAgendamento;
 import br.com.fiap.medix.model.Agendamento;
 import br.com.fiap.medix.model.Usuario;
@@ -70,5 +71,11 @@ public class AgendamentoController {
     @GetMapping("/teste-navegacao")
     public ResponseEntity<String> testeNavegacao() {
         return ResponseEntity.ok(service.testarNavegacao());
+    }
+
+    // Endpoint para o Angular carregar a lista de médicos disponíveis para agendamento
+    @GetMapping("/medicos")
+    public ResponseEntity<List<LookupDTO.Medico>> listarMedicosParaSelect() {
+        return ResponseEntity.ok(service.listarMedicosSimples());
     }
 }
