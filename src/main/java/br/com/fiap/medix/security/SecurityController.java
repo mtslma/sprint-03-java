@@ -31,18 +31,17 @@ public class SecurityController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Depois eu vou apagar esse aqui
-    private record UsuarioRequest(String email, String senha, String role) {}
-
+    // Realiza o cadastro de novos usuários no sistema com criptografia de senha
     @PostMapping("/registrar")
     public ResponseEntity registrar(@RequestBody @Valid UsuarioRequest data) {
-        // Verifica se já existe
+        // Valida se o e-mail informado já consta na base de dados do Oracle
         if(usuarioRepository.findByEmail(data.email()).isPresent()) {
             return ResponseEntity.badRequest().body("Usuário já cadastrado");
         }
 
         Admin novoUsuario = new Admin();
         novoUsuario.setEmail(data.email());
+        // Aplica o PasswordEncoder antes de persistir a senha na TB_USUARIO
         novoUsuario.setSenha(passwordEncoder.encode(data.senha()));
         novoUsuario.setRole(Role.valueOf(data.role().toUpperCase()));
 
@@ -51,15 +50,20 @@ public class SecurityController {
         return ResponseEntity.ok("Usuário cadastrado com sucesso!");
     }
 
+    // Endpoint de autenticação que gera o Token JWT para acesso aos recursos protegidos
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid LoginRequest data) {
+        // Encapsula as credenciais recebidas em um objeto de autenticação do Spring
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.senha());
+        // Delega a verificação das credenciais para o AuthenticationManager
         var auth = this.authManager.authenticate(usernamePassword);
 
+        // Gera o token de acesso após a validação bem-sucedida do usuário
         var token = tokenService.gerarToken((Usuario) auth.getPrincipal());
 
         return ResponseEntity.ok(new TokenResponse(token));
     }
 
+    // Record para padronizar a resposta de sucesso contendo o token JWT
     private record TokenResponse(String token){}
 }

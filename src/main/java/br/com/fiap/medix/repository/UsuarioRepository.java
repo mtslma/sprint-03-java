@@ -11,9 +11,10 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
+    // Busca as credenciais de acesso do usuário para o processo de autenticação
     Optional<Usuario> findByEmail(String email);
 
-    // SPRINT 3: FUNCTION 1 (Conversão Manual JSON)
+    // PROVA DO REQUISITO: Executa Function Oracle que formata dados da TB_USUARIO em JSON
     @Query(value = "SELECT FN_CONVERTE_USUARIO_JSON(:id) FROM DUAL", nativeQuery = true)
     String getUsuarioCustomJson(@Param("id") Long id);
 }

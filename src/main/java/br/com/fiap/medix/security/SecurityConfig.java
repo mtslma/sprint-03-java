@@ -22,29 +22,31 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    // Configura a corrente de filtros de segurança e as permissões de acesso da API
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter securityFilter) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                // 1. ATIVA O CORS COM A CONFIGURAÇÃO ABAIXO
+                // Habilita o compartilhamento de recursos (CORS) para integração com o Angular
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        // Swagger
+                        // Libera o acesso à documentação do Swagger UI e esquemas OpenAPI
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-                        // Permissões de Autenticação
+                        // Permite acesso público aos endpoints de login e registro de usuários
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
 
-                        // Regras de Perfil (Roles)
+                        // Restringe rotas administrativas apenas para usuários com perfil ADMIN no banco
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        // Regras de Unidades
+
+                        // Define permissão de leitura pública para unidades e escrita para colaboradores
                         .requestMatchers(HttpMethod.GET, "/unidades/**").permitAll()
                         .requestMatchers("/unidades/**").hasAnyRole("ADMIN", "COLABORADOR")
 
-                        // Agendamentos (Acesso para todos logados, lógica interna valida o dono)
+                        // Exige autenticação para gestão de agendamentos e procedimentos analíticos
                         .requestMatchers("/agendamentos/**").authenticated()
 
                         .anyRequest().authenticated()
@@ -53,7 +55,7 @@ public class SecurityConfig {
                 .build();
     }
 
-    // 2. BEAN DE CONFIGURAÇÃO DO CORS PARA O ANGULAR
+    // Define as origens e métodos permitidos para requisições externas do Front-end
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -67,12 +69,13 @@ public class SecurityConfig {
         return source;
     }
 
+    // Configura o codificador de senhas (NoOp apenas para facilitação dos testes da Sprint)
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Mantido conforme sua solicitação para facilitar os testes da Sprint
         return NoOpPasswordEncoder.getInstance();
     }
 
+    // Expõe o gerenciador de autenticação necessário para o processo de login via Token
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();

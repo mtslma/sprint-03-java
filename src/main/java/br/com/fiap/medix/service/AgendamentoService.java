@@ -21,6 +21,7 @@ public class AgendamentoService {
     @Autowired private UnidadeRepository unidadeRepository;
     @Autowired private SalaRepository salaRepository;
 
+    // Gerencia a criação de consultas validando a disponibilidade do médico no banco
     @Transactional
     public Agendamento criarAgendamento(AgendamentoRequest dto, Usuario pacienteLogado) {
         if (!(pacienteLogado instanceof Paciente)) {
@@ -50,6 +51,7 @@ public class AgendamentoService {
         return repository.save(agendamento);
     }
 
+    // Atualiza o estado da consulta permitindo o fluxo de confirmação ou cancelamento
     @Transactional
     public void atualizarStatus(Long id, StatusAgendamento novoStatus) {
         Agendamento agendamento = repository.findById(id).orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
@@ -57,33 +59,33 @@ public class AgendamentoService {
         repository.save(agendamento);
     }
 
-    // =====================================================================
-    // MÉTODOS DA SPRINT 3 (CHAMAM AS FUNCTIONS E PROCEDURES NO BANCO)
-    // =====================================================================
-
+    // PROVA DO REQUISITO: Camada de serviço acessando Function para cálculo matemático de tempo
     public Long consultarOcupacaoUnidade(Long unidadeId) {
         return repository.calcularOcupacaoMinutos(unidadeId);
     }
 
+    // PROVA DO REQUISITO: Executa Procedure para geração de histórico consolidado em JSON
     public String testarHistorico(Long id) {
         return repository.chamarHistoricoProcedure(id);
     }
 
+    // PROVA DO REQUISITO: Executa Procedure analítica utilizando LAG e LEAD do Oracle
     public String testarNavegacao() {
         return repository.chamarRelatorioNavegacaoProcedure();
     }
 
-    // =====================================================================
-
+    // Retorna todos os agendamentos vinculados ao ID do paciente logado
     public List<Agendamento> listarMeusAgendamentos(Usuario usuario) {
         return repository.findAllByPacienteIdOrderByDataHoraInicioDesc(usuario.getId());
     }
 
+    // Localiza a consulta mais próxima da data atual para exibição em destaque
     public Agendamento buscarProximoAgendamento(Usuario usuario) {
         List<Agendamento> lista = repository.findNextAgendamento(usuario.getId(), LocalDateTime.now(), PageRequest.of(0, 1));
         return lista.isEmpty() ? null : lista.get(0);
     }
 
+    // Consolida dados estatísticos e listas para compor a visão geral do dashboard
     public DashboardPacienteDTO carregarDashboard(Usuario usuario) {
         List<Agendamento> todos = repository.findAllByPacienteIdOrderByDataHoraInicioDesc(usuario.getId());
         long realizados = todos.stream().filter(a -> StatusAgendamento.FINALIZADO.equals(a.getStatus())).count();

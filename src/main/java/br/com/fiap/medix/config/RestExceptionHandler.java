@@ -12,18 +12,13 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class RestExceptionHandler {
 
-    /**
-     * CAPTURA ERROS DAS PROCEDURES ORACLE (RAISE_APPLICATION_ERROR)
-     * Trata os erros ORA-20001, ORA-20002, etc., definidos nas suas V7 e V6.
-     */
+    // Captura erros disparados por RAISE_APPLICATION_ERROR nas Procedures Oracle
     @ExceptionHandler(JpaSystemException.class)
     public ResponseEntity<ErroResponse> handleOracleProcedures(JpaSystemException ex) {
         String fullMessage = ex.getRootCause() != null ? ex.getRootCause().getMessage() : ex.getMessage();
         String cleanMessage = "Erro no processamento do banco de dados.";
 
-        // Lógica para limpar o código ORA-XXXXX e mostrar apenas o texto da sua procedure
         if (fullMessage != null && fullMessage.contains("ORA-")) {
-            // Tenta pegar apenas a mensagem após o código do erro (ex: ORA-20002: Mensagem aqui)
             String[] parts = fullMessage.split(":");
             cleanMessage = parts.length > 1 ? parts[1].split("\n")[0].trim() : fullMessage;
         }
@@ -39,24 +34,21 @@ public class RestExceptionHandler {
         return ResponseEntity.status(status).body(body);
     }
 
-    /**
-     * CAPTURA ERRO 403 - ACESSO NEGADO
-     * Quando um Paciente tenta acessar rota de Admin, por exemplo.
-     */
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErroResponse> handleForbidden(AccessDeniedException ex) {
-        var status = HttpStatus.FORBIDDEN; // 403
+    // Trata violações de integridade como duplicidade de CPF/Email na TB_USUARIO
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ErroResponse> handleDuplicidade(org.springframework.dao.DataIntegrityViolationException ex) {
+        var status = HttpStatus.CONFLICT;
         var body = new ErroResponse(
                 status.value(),
-                "Acesso Negado",
-                "Você não tem permissão para acessar este recurso.",
+                "Conflito de Dados",
+                "Este registro (E-mail ou CPF) já existe no sistema.",
                 LocalDateTime.now(),
                 null
         );
         return ResponseEntity.status(status).body(body);
     }
 
-    // Captura erros de lógica do Java (Ex: Antecedência de 30min)
+    // Gerencia erros de lógica das Functions de cálculo e validação Java
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErroResponse> handleRuntime(RuntimeException ex) {
         var status = HttpStatus.BAD_REQUEST;
@@ -70,21 +62,21 @@ public class RestExceptionHandler {
         return ResponseEntity.status(status).body(body);
     }
 
-    // Captura erros de integridade (E-mail/CPF duplicado)
-    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
-    public ResponseEntity<ErroResponse> handleDuplicidade(org.springframework.dao.DataIntegrityViolationException ex) {
-        var status = HttpStatus.CONFLICT; // 409
+    // Captura tentativas de acesso sem permissão baseadas na ROLE do usuário
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErroResponse> handleForbidden(AccessDeniedException ex) {
+        var status = HttpStatus.FORBIDDEN;
         var body = new ErroResponse(
                 status.value(),
-                "Conflito de Dados",
-                "Este registro (E-mail ou CPF) já existe no sistema.",
+                "Acesso Negado",
+                "Você não tem permissão para acessar este recurso.",
                 LocalDateTime.now(),
                 null
         );
         return ResponseEntity.status(status).body(body);
     }
 
-    // Erro genérico para falhas catastróficas
+    // Tratamento para falhas críticas e exceções genéricas do sistema
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErroResponse> handleGeneric(Exception ex) {
         var status = HttpStatus.INTERNAL_SERVER_ERROR;

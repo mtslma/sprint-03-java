@@ -28,12 +28,12 @@ public abstract class Usuario implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.senha; // Retorna o atributo senha
+        return this.senha;
     }
 
     @Override
     public String getUsername() {
-        return this.email; // Retorna o atributo email (que é o login)
+        return this.email;
     }
 
     // Outros métodos obrigatórios do UserDetails

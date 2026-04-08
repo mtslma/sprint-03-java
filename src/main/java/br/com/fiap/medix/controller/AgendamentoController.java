@@ -54,19 +54,19 @@ public class AgendamentoController {
         return ResponseEntity.ok(service.carregarDashboard(logado));
     }
 
-    // PROVAS DOS REQUISITOS (SPRINT 3)
-
-    // PROVA DA FUNCTION 2: Cálculo Matemático (V4)
+    // PROVA DO REQUISITO: Executa Function para cálculo de ocupação em minutos no banco
     @GetMapping("/ocupacao-unidade/{unidadeId}")
     public ResponseEntity<Long> consultarOcupacao(@PathVariable Long unidadeId) {
         return ResponseEntity.ok(service.consultarOcupacaoUnidade(unidadeId));
     }
 
+    // PROVA DO REQUISITO: Executa Procedure SP_GERAR_HISTORICO_PACIENTE_JSON com parâmetro OUT
     @GetMapping("/teste-historico/{id}")
     public ResponseEntity<String> testeHistorico(@PathVariable Long id) {
         return ResponseEntity.ok(service.testarHistorico(id));
     }
 
+    // PROVA DO REQUISITO: Executa Procedure SP_ANALISE_SEQUENCIAL_CRONOLOGICA (LAG/LEAD) com parâmetro OUT
     @GetMapping("/teste-navegacao")
     public ResponseEntity<String> testeNavegacao() {
         return ResponseEntity.ok(service.testarNavegacao());

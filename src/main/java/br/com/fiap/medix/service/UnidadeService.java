@@ -18,20 +18,23 @@ public class UnidadeService {
     @Autowired
     private UnidadeRepository repository;
 
+    // Retorna a listagem de todas as unidades de saúde persistidas na TB_UNIDADE_SAUDE
     public List<UnidadeSaude> listarTodas() {
         return repository.findAll();
     }
 
+    // Recupera uma unidade pelo ID ou lança exceção caso o registro não exista no banco
     public UnidadeSaude buscarPorId(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Unidade de Saúde não encontrada com o ID: " + id));
     }
 
+    // Salva nova unidade e dispara Trigger de Auditoria para registrar a inserção
     @Transactional
     public UnidadeSaude salvar(UnidadeSaude unidade, Usuario logado) {
         validarAcessoAdministrativo(logado);
 
-        // Garante que cada sala saiba a qual unidade pertence (para o banco gravar o ID certo)
+        // Estabelece o relacionamento bidirecional entre Sala e Unidade para integridade da FK
         if (unidade.getSalas() != null) {
             unidade.getSalas().forEach(sala -> sala.setUnidade(unidade));
         }
@@ -39,6 +42,7 @@ public class UnidadeService {
         return repository.save(unidade);
     }
 
+    // Atualiza dados da unidade e registra a modificação automaticamente via Trigger
     @Transactional
     public UnidadeSaude atualizar(Long id, UnidadeSaude dadosNovos, Usuario logado) {
         validarAcessoAdministrativo(logado);
@@ -48,7 +52,7 @@ public class UnidadeService {
         unidadeExistente.setNome(dadosNovos.getNome());
         unidadeExistente.setEndereco(dadosNovos.getEndereco());
 
-        // Lógica para atualizar salas (limpa as antigas e adiciona as novas do JSON)
+        // Sincroniza a lista de salas removendo as antigas e vinculando as novas instâncias
         if (dadosNovos.getSalas() != null) {
             unidadeExistente.getSalas().clear();
             dadosNovos.getSalas().forEach(sala -> {
@@ -60,6 +64,7 @@ public class UnidadeService {
         return repository.save(unidadeExistente);
     }
 
+    // Remove o registro da unidade e gera log de exclusão na TB_AUDITORIA
     @Transactional
     public void excluir(Long id, Usuario logado) {
         validarAcessoAdministrativo(logado);
@@ -67,6 +72,7 @@ public class UnidadeService {
         repository.delete(unidade);
     }
 
+    // Valida se o usuário possui a permissão administrativa necessária para gerir unidades
     private void validarAcessoAdministrativo(Usuario usuario) {
         if (usuario instanceof Colaborador colab) {
             if (colab.getTipoColaborador() != TipoColaborador.ADMINISTRATIVO) {

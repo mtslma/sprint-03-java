@@ -14,21 +14,21 @@ public class Auditoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "tabela_nome") // Antes estava nome_tabela
+    @Column(name = "tabela_nome")
     private String tabelaNome;
 
     @Column(name = "operacao")
     private String operacao;
 
-    @Column(name = "usuario_db") // Antes estava usuario_bd
+    @Column(name = "usuario_db")
     private String usuarioDb;
 
-    @Column(name = "data_evento") // Antes estava data_operacao
+    @Column(name = "data_evento")
     private LocalDateTime dataEvento;
 
-    @Column(name = "dados_antigos") // Antes estava valor_antigo
+    @Column(name = "dados_antigos")
     private String dadosAntigos;
 
-    @Column(name = "dados_novos") // Antes estava valor_novo
+    @Column(name = "dados_novos")
     private String dadosNovos;
 }

@@ -19,6 +19,7 @@ public class AdminController {
     @Autowired
     private AdminService service;
 
+    // Endpoint para cadastro que dispara a Trigger de Auditoria na TB_USUARIO
     @PostMapping("/colaboradores")
     public ResponseEntity<Colaborador> cadastrarColaborador(@RequestBody @Valid ColaboradorDTO dto) {
         Colaborador colaborador = new Colaborador();
@@ -30,15 +31,13 @@ public class AdminController {
         return ResponseEntity.status(201).body(service.criarColaborador(colaborador));
     }
 
-    // PROVAS DOS REQUISITOS (SPRINT 3)
-
-    // PROVA DA TRIGGER (V3)
+    // PROVA DO REQUISITO: Recupera logs gerados automaticamente pela Trigger
     @GetMapping("/logs")
     public ResponseEntity<List<Auditoria>> visualizarLogs() {
         return ResponseEntity.ok(service.listarTodosLogs());
     }
 
-    // PROVA DA FUNCTION 1: Conversão Manual JSON (V4)
+    // PROVA DO REQUISITO: Executa Function Oracle para conversão manual de dados em JSON
     @GetMapping(value = "/usuario/{id}/json", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> obterUsuarioJson(@PathVariable Long id) {
         return ResponseEntity.ok(service.obterUsuarioJson(id));

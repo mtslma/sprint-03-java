@@ -20,17 +20,19 @@ public class AdminService {
     @Autowired private UsuarioRepository usuarioRepository;
     @Autowired private PasswordEncoder passwordEncoder;
 
+    // Persiste novo colaborador aplicando criptografia e disparando Trigger de Auditoria
     public Colaborador criarColaborador(Colaborador colaborador) {
         colaborador.setSenha(passwordEncoder.encode(colaborador.getSenha()));
         colaborador.setRole(Role.COLABORADOR);
         return colaboradorRepository.save(colaborador);
     }
 
+    // Recupera a lista completa de logs gerados pelas Triggers de Auditoria do Oracle
     public List<Auditoria> listarTodosLogs() {
         return auditoriaRepository.findAll();
     }
 
-    // Acessa a FUNCTION 1
+    // PROVA DO REQUISITO: Camada de serviço acessando a Function Oracle de conversão JSON
     public String obterUsuarioJson(Long id) {
         return usuarioRepository.getUsuarioCustomJson(id);
     }

@@ -12,16 +12,15 @@ import java.util.Optional;
 @Repository
 public interface ColaboradorRepository extends JpaRepository<Colaborador, Long> {
 
-    /**
-     * CORREÇÃO: O Spring não achou 'usuarioEmail' automaticamente.
-     * Usamos JPQL para buscar o e-mail que está na classe pai (Usuario).
-     */
+    // Busca o colaborador filtrando pelo e-mail presente na classe pai Usuario
     @Query("SELECT c FROM Colaborador c WHERE c.email = :email")
     Optional<Colaborador> findByUsuarioEmail(@Param("email") String email);
 
+    // Localiza um colaborador específico garantindo que sua função seja operacional
     @Query("SELECT c FROM Colaborador c WHERE c.id = :id AND c.tipoColaborador = 'OPERACIONAL'")
     Optional<Colaborador> findAtivoById(@Param("id") Long id);
 
+    // Valida a disponibilidade do médico cruzando dados com a TB_AGENDAMENTO
     @Query("SELECT c FROM Colaborador c " +
             "WHERE c.id = :id " +
             "AND c.tipoColaborador = 'OPERACIONAL' " +

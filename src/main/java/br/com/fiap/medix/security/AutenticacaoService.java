@@ -11,11 +11,13 @@ import org.springframework.stereotype.Service;
 public class AutenticacaoService implements UserDetailsService {
 
     @Autowired
-    private UsuarioRepository repository; // Crie um repository para a classe Usuario
+    private UsuarioRepository repository;
 
+    // Carrega os dados da TB_USUARIO para o processo de autenticação do Spring Security
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         System.out.println("Tentando login com: " + username);
+        // Busca o usuário pelo e-mail ou lança exceção caso não exista no banco de dados
         return repository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
     }
